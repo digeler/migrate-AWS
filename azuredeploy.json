@@ -1,0 +1,61 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "north europe",
+      "metadata": {
+        "description": "Location to create the VM in"
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_D2",
+      "metadata": {
+        "description": "Size of the VM"
+      }
+    },
+    "vmName": {
+      "type": "string",
+      "defaultValue": "migratew",
+      "metadata": {
+        "description": "Name of the VM"
+      }
+    }
+  },
+  "variables": {
+    "nicName": "nicmig"
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[parameters('vmName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "name": "[concat(parameters('vmName'),'-osDisk')]",
+            "osType": "Linux",
+            "caching": "ReadWrite",
+            "vhd": {
+              "uri": "https://007pqzkn75ztrjmagntpri0.blob.core.windows.net/image/migrateinstance.vhd"
+            },
+            "createOption": "Attach"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "/subscriptions/928f4e7e-2c28-4063-a56e-6f1e6f2bb73c/resourceGroups/mine-jumbox-232670/providers/Microsoft.Network/networkInterfaces/jumbox"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
